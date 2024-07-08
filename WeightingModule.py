@@ -89,7 +89,7 @@ def CreateWeightsArray(weighting_strategy: str, n: int) -> pd.DataFrame:
             # Split the strategy and extract the exponent parameter
             strategy_base, p = weighting_strategy.split('_')
             weights_vector = create_RankExponent(n=n, p=int(p))
-            return pd.DataFrame({f'{strategy_base}': weights_vector})
+            return pd.DataFrame({f'{weighting_strategy}': weights_vector})
         else:
             print('RankExponent command not properly defined. Structure to follow is "RankExponent_<integer>"')
             return None

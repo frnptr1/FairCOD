@@ -6,6 +6,7 @@ mapping_critical_event_to_value:
   Data regulation fulfillment: 1
   Partner product roadmap accomplishment: 0.8
   Digital Platform obsolescence: 0.8
+  Brand Image Preservation: 0.6
 
 
 # Columns to normalize
@@ -38,9 +39,10 @@ columns_to_drop:
   - CustomerSatisfaction_L3Details
   - CustomerSatisfaction_L4MoreInfo
   - Deadline
-  - Critical_Event_type
   - CarOwner_CarSegment
-
+  - Critical_Event_type
+  - SOP_EOP_Relevant
+  
 ordered_fullset_criteria:
   - EconomicImpact_Income
   - EconomicImpact_CostsSaving
@@ -52,7 +54,7 @@ ordered_fullset_criteria:
   - Margin_to_deadline
   - Prospects
   - Strategy_Value
-  - PlatformUsage_FinalVal
+  - PlatformUsage_FinalValue
   - CarOwner_CarSegment
   - Opportunity
   - GapCompetitors

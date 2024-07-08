@@ -41,14 +41,21 @@ def normalize_column(df, columns_to_norm):
     columns_all_zero = df.columns[(df == 0).all()].tolist()
     difference = [item for item in columns_to_norm if item not in columns_all_zero]
 
+    df_to_normalize = df[difference].astype(float)
+
     # Calculate L2 norms for the selected columns
-    norms = np.linalg.norm(df[difference], axis=0)
+    norms = np.linalg.norm(df_to_normalize, axis=0)
+
 
     # Perform normalization
     df[difference] = df[difference].div(norms)
 
     return df
 
+
+def drop_rows_by_value(df: pd.DataFrame, column:str='SOP_EOP_Relevant', value:str='Yes'):
+    return df[df[column] != value]
+ 
 
 
 def transform_Margin_to_deadline(df):
@@ -82,6 +89,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 '''
 def ExecuteDataPreparation(filename: str) -> Dict:
+    
+
     # Define the common folder path
     common_folder_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -110,6 +119,7 @@ def ExecuteDataPreparation(filename: str) -> Dict:
 
     clean_dataset_to_process = (df.pipe(function_mapping_critical_event_to_value, config['mapping_critical_event_to_value']).
                                 pipe(pd.DataFrame.replace, to_replace=np.NAN, value=0).
+                                pipe(drop_rows_by_value, column='SOP_EOP_Relevant', value='Yes').
                                 pipe(pd.DataFrame.drop, config['columns_to_drop'], axis=1).
                                 pipe(transform_Margin_to_deadline))
 

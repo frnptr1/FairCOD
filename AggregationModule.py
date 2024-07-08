@@ -26,7 +26,7 @@ def OWA(dataframe: pd.DataFrame, criteria_weights_df: pd.DataFrame, dpc, columns
 
 
     # if there is the need to drop some support columns
-    #if columns_to_drop:
+    # if columns_to_drop:
     #    dataframe.drop(columns=columns_to_drop, axis=1, inplace=True)
 
     # loop over weights dataframe by columns

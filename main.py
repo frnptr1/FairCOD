@@ -1,6 +1,7 @@
 from AggregationModule import OWA, WA, WOWA
 from DataPreparation import ExecuteDataPreparation
 from MappingModule import ExecuteDataMapping
+from ErrorMeasure import evaluate_WeightedMeanAbsoluteError
 import WeightingModule
 import pandas as pd
 from tabulate import tabulate
@@ -42,11 +43,11 @@ def main():
     # I load information about data source and aggregation strategy and processing config
     filename_str = 'FairCOD-Dataset.xlsx' # to be parametrized lately
     aggregation = 'OWA' # to be parametrized lately
-    save = True # to save results created as .csv files - to be parametrized lately
+    save = False # to save results created as .csv files - to be parametrized lately
     # create ID session
     id_session = f'{datetime.now().strftime("%Y%m%d_%H%M%S_%f")}'
     file_path = os.path.join(common_folder_path, 'results', id_session) # if save == True, file path where csv are stored
-    os.makedirs(name=file_path, exist_ok=True)
+    # os.makedirs(name=file_path, exist_ok=True)
 
     #################
     # PREPROCESSING #
@@ -76,14 +77,10 @@ def main():
 
                 aggregated_df, aggregated_column_name = OWA(dataframe= df, 
                                                             criteria_weights_df=w, 
+                                                            dpc=dpc,
                                                             columns_to_drop=c_to_drop)
                 
                 res_dict[dpc][backlog_name] = aggregated_df
-
-                if save:
-                    os.makedirs(name=file_path, exist_ok=True)
-                    res_dict[dpc][backlog_name].to_csv(os.path.join(file_path, f'{dpc}_{backlog_name}_aggregated.csv'))
-
 
 
     elif aggregation == 'WOWA':
@@ -109,10 +106,6 @@ def main():
                 
                 res_dict[dpc][backlog_name] = aggregated_df
 
-                if save:
-                    os.makedirs(name=file_path, exist_ok=True)
-                    res_dict[dpc][backlog_name].to_csv(os.path.join(file_path, f'{dpc}_{backlog_name}_aggregated.csv'))
-
 
     elif aggregation == 'WA':
 
@@ -132,10 +125,6 @@ def main():
                 
                 res_dict[dpc][backlog_name] = aggregated_df
 
-                if save:
-                    os.makedirs(name=file_path, exist_ok=True)
-                    res_dict[dpc][backlog_name].to_csv(os.path.join(file_path, f'{dpc}_{backlog_name}_aggregated.csv'))
-
 
     ###########
     # MAPPING #
@@ -144,15 +133,31 @@ def main():
 
         for backlog_name, df in backlogs.items():
 
+            aggregated_column_name = f"{aggregation}_{weighting_strategy}_{str(dpc)}"
+
             res_dict[dpc][backlog_name] = ExecuteDataMapping(dataframe= res_dict[dpc][backlog_name], 
                                                              columns_added=aggregated_column_name,
-                                                             dpc=dpc)
+                                                             dpc=dpc,
+                                                             intervals_type='probability',
+                                                             backlog=backlog_name)
+            
+            predicted_class_column_name = aggregated_column_name + '_class'
+            true_class_column_name = 'CoD_class'
+
+            evaluate_WeightedMeanAbsoluteError(df = res_dict[dpc][backlog_name],
+                                               column_name_true = true_class_column_name,
+                                               column_name_pred = predicted_class_column_name,
+                                               backlog = backlog_name,
+                                               dpc = dpc)
+
+
             if save:
+                os.makedirs(name=file_path, exist_ok=True)
                 res_dict[dpc][backlog_name].to_csv(os.path.join(file_path, f'{dpc}_{backlog_name}_mapped.csv'))
 
 
     # Example usage
-    info = f"Successfylly completed session {id_session}\nSource of data {filename_str}\nAggregation {aggregation}\n"
+    info = f"Successfully completed session {id_session}\nSource of data {filename_str}\nAggregation {aggregation}"
 
     # append weighting strategy, if exists
     if weighting_strategy:
@@ -169,8 +174,11 @@ def main():
         additional_string = f"P vector {json.dumps(p, indent=4)}\n"
         info = "\n".join([info,additional_string])
 
-    filename = os.path.join(file_path, f"parameters_{id_session}.txt")
-    save_information(filename, info)
+    if save:
+        filename = os.path.join(file_path, f"parameters_{id_session}.txt")
+        save_information(filename, info)
+    else:
+        print(info)
 
 if __name__ == "__main__":
 
