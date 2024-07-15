@@ -1,0 +1,63 @@
+# Mapping dictionaries
+mapping_class_to_Fib:
+  1: 1
+  2: 2
+  3: 3
+  4: 5
+  5: 8
+  6: 13
+  7: 21
+  8: 40
+  9: 100
+
+
+
+# Mapping dictionaries
+mapping_Fib_to_class:
+    1: 1
+    2: 2
+    3: 3
+    5: 4
+    8: 5
+    13: 6
+    21: 7
+    40: 8
+    100: 9
+
+# OLA probabilities of classes
+intervals_OLA: [
+    0.000000,
+    0.034483,
+    0.137931,
+    0.172414,
+    0.241379,
+    0.517241,
+    0.758621,
+    0.896552,
+    0.931034,
+    1.000000
+]
+
+# Online Sales probabilities of classes
+intervals_Online_Sales: [
+    0.000000,
+    0.032258,
+    0.161290,
+    0.322581,
+    0.645161,
+    0.741935,
+    0.870968,
+    1.000000
+]
+
+# websites probabilities of classes
+intervals_Websites: [
+    0.000000,
+    0.032258,
+    0.161290,
+    0.322581,
+    0.645161,
+    0.741935,
+    0.870968,
+    1.000000
+]

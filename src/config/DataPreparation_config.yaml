@@ -1,0 +1,63 @@
+mapping_critical_event_to_value:
+  Vehicle SOP affected: 1 
+  Digital Platform unavailability: 1
+  Vehicle regulation fulfillment: 1
+  Digital Platform regulation fulfillment: 1
+  Data regulation fulfillment: 1
+  Partner product roadmap accomplishment: 0.8
+  Digital Platform obsolescence: 0.8
+  Brand Image Preservation: 0.6
+
+
+# Columns to normalize
+columns_to_normalize:
+  - EconomicImpact_Income
+  - EconomicImpact_CostsSaving
+  - EconomicImpact_LossPrevention
+  - Margin_to_deadline
+
+columns_to_drop: 
+  - Effort
+  - WSJF
+  - Status in D.P.O. for column DPC 23.3
+  - In DPC prio for 23.3?
+  - Comments
+  - Cost
+  - Strategy_Objective_Year
+  - Strategy_Objective
+  - Strategy_KeyResult
+  - UserExperience_RateYourExperience
+  - UserExperience_FutureCustomerExperience_Initiative
+  - UserExperience_FutureCustomerExperience_Action
+  - PlatformUsage_Platform
+  - PlatformUsage_KPI
+  - PlatformUsage_Impact
+  - Markets
+  - Prospects
+  - CustomerSatisfaction_L1Category
+  - CustomerSatisfaction_L2SpecificPart
+  - CustomerSatisfaction_L3Details
+  - CustomerSatisfaction_L4MoreInfo
+  - Deadline
+  - CarOwner_CarSegment
+  - Critical_Event_type
+  - SOP_EOP_Relevant
+  
+ordered_fullset_criteria:
+  - EconomicImpact_Income
+  - EconomicImpact_CostsSaving
+  - Markets_Value
+  - Critical_Event_value
+  - CustomerSatisfaction_Value
+  - EconomicImpact_LossPrevention
+  - UserExperience_FutureCustomerExperience_Value
+  - Margin_to_deadline
+  - Prospects
+  - Strategy_Value
+  - PlatformUsage_FinalValue
+  - CarOwner_CarSegment
+  - Opportunity
+  - GapCompetitors
+
+
+standalone: false

@@ -1,0 +1,28 @@
+sql_result_create_table: 'CREATE TABLE IF NOT EXISTS results (
+    id TEXT PRIMARY KEY,
+    aggregation TEXT,
+    Weighting TEXT,
+    Num_crits INTEGER,
+    DPC TEXT,
+    Backlog TEXT,
+    WMAE REAL,
+    N_WMAE REAL
+)'
+
+sql_result_insert_into: 'INSERT INTO results (id, aggregation, Weighting, Num_crits, DPC, Backlog, WMAE, N_WMAE)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+
+
+sql_cod_estimation_create_table: 'CREATE TABLE IF NOT EXISTS cod_estimation (
+    session_id TEXT PRIMARY KEY,
+    epic_name TEXT,
+    epic_id TEXT,
+    true_cod INTEGER,
+    pred_cod INTEGER,
+    class_difference INTEGER,
+    error INTEGER,
+    FOREIGN KEY (session_id) REFERENCES results(id)
+)'
+
+sql_cod_estimation_insert_into: 'INSERT INTO cod_estimation (session_id, epic_name, epic_id, true_cod, pred_cod, class_difference, error)
+VALUES (?, ?, ?, ?, ?, ?, ?)'

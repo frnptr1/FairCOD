@@ -1,0 +1,34 @@
+# Aggregation types available: OWA, WA, WOWA, TOPSIS
+WOWA:
+
+  w: 'RankExponential_4'
+
+  p:
+    EconomicImpact_Income : 0.181818182
+    EconomicImpact_CostsSaving : 0.163636364
+    Markets_Value : 0.145454545
+    Critical_Event_value : 0.127272727
+    CustomerSatisfaction_Value: 0.109090909
+    EconomicImpact_LossPrevention : 0.090909091
+    UserExperience_FutureCustomerExperience_Value : 0.072727273
+    Margin_to_deadline_value : 0.054545455
+    Strategy_Value : 0.036363636
+    PlatformUsage_FinalValue : 0.018181818
+
+WA:
+  w:
+    EconomicImpact_Income : 0.181818182
+    EconomicImpact_CostsSaving : 0.163636364
+    Markets_Value : 0.145454545
+    Critical_Event_value : 0.127272727
+    CustomerSatisfaction_Value: 0.109090909
+    EconomicImpact_LossPrevention : 0.090909091
+    UserExperience_FutureCustomerExperience_Value : 0.072727273
+    Margin_to_deadline_value : 0.054545455
+    Strategy_Value : 0.036363636
+    PlatformUsage_FinalValue : 0.018181818  
+
+OWA:
+  w: 'RankExponential_4'
+
+
