@@ -1,7 +1,7 @@
 # Aggregation types available: OWA, WA, WOWA, TOPSIS
 WOWA:
 
-  w: 'RankExponential_4'
+  w: 'RankExponent_4'
 
   p:
     EconomicImpact_Income : 0.181818182
@@ -29,6 +29,6 @@ WA:
     PlatformUsage_FinalValue : 0.018181818  
 
 OWA:
-  w: 'RankExponential_4'
+  w: 'RankExponent_4'
 
 

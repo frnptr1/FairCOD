@@ -11,7 +11,7 @@ import sqlite3
 def evaluate_WeightedMeanAbsoluteError(df: pd.DataFrame, column_name_true: str, column_name_pred:str, backlog:Optional[str], dpc:Optional[str],id_session:Optional[str],db:None) -> tuple[float, float]:
 
     classes_values = [1, 2, 3, 4,5,6,7,8,9]
-    weights = [0, 1, 1, 2, 3, 5, 8, 19, 60]
+    weights = [1, 1, 2, 3, 5, 8, 19, 60]
 
     n = df.shape[0]
     total_error = 0
@@ -35,7 +35,8 @@ def evaluate_WeightedMeanAbsoluteError(df: pd.DataFrame, column_name_true: str, 
         if db is not None:
             # Execute the command
             cod_estimation_id_session = '_'.join([id_session, row.name])
-            db.DB_InsertLine_cod_estimation(id_param=cod_estimation_id_session, 
+            db.DB_InsertLine_cod_estimation(id_param=cod_estimation_id_session,
+                                            results_id=id_session, 
                                             epic_name_param=row['Epic_Name'], 
                                             epic_id_param=row.name, 
                                             true_cod_param=int(row[column_name_true]), 
@@ -61,4 +62,4 @@ def evaluate_WeightedMeanAbsoluteError(df: pd.DataFrame, column_name_true: str, 
         print(f"'WMAE: '{float(wmae):^8.2f} | 'N_WMAE: '{normalized_wmae:^8.2f} \n")
 
 
-    return (float(wmae), float(normalized_wmae))
+    return (total_error, float(wmae), float(normalized_wmae))

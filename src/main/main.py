@@ -55,7 +55,7 @@ def main():
     db_config = load_config(db_config_path)
     
     # I load information about data source and aggregation strategy and processing config
-    filename_str = 'FairCOD-Dataset.xlsx' # to be parametrized lately
+    filename_str = 'FairCOD-Dataset-v2.xlsx' # to be parametrized lately
     aggregation = 'OWA' # to be parametrized lately
     save = False # to save results created as .csv files - to be parametrized lately
 
@@ -64,7 +64,7 @@ def main():
     file_path = os.path.join(project_root, 'results', time_session) # if save == True, file path where csv are stored
 
     # Create the full path for the database file
-    db_path = os.path.join(project_root, 'results', "database.db")
+    db_path = os.path.join(project_root, 'results', "database-v2.db")
 
     db = DBConnection(db_position = db_path)
 
@@ -119,7 +119,7 @@ def main():
             for backlog_name, df in backlogs.items():
 
                 aggregated_df, aggregated_column_name = WOWA(dataframe=df, 
-                                                             w_weights_vector=w.to_numpy(),
+                                                             w_weights_vector=w,
                                                              p_weights_vector= p,
                                                              dpc=dpc,
                                                              columns_to_drop=c_to_drop)
@@ -154,8 +154,10 @@ def main():
     for dpc, backlogs in res_dict.items():
 
         for backlog_name, df in backlogs.items():
-
+            
             aggregated_column_name = f"{aggregation}_{weighting_strategy}_{str(dpc)}"
+
+            print(res_dict[dpc][backlog_name].columns)
 
             res_dict[dpc][backlog_name] = ExecuteDataMapping(dataframe= res_dict[dpc][backlog_name], 
                                                              columns_added=aggregated_column_name,
@@ -166,23 +168,27 @@ def main():
             predicted_class_column_name = aggregated_column_name + '_class'
             true_class_column_name = 'CoD_class'
 
+
+            num_of_epics_in_backlog = res_dict[dpc][backlog_name].shape[0]
             id_session = '_'.join([time_session, str(dpc), backlog_name])
 
-            wmae, n_wmae = evaluate_WeightedMeanAbsoluteError(df = res_dict[dpc][backlog_name],
-                                                              column_name_true = true_class_column_name,
-                                                              column_name_pred = predicted_class_column_name,
-                                                              backlog = backlog_name,
-                                                              dpc = dpc,
-                                                              id_session=id_session,
-                                                              db=db)
+            total_error, wmae, n_wmae = evaluate_WeightedMeanAbsoluteError(df = res_dict[dpc][backlog_name],
+                                                                            column_name_true = true_class_column_name,
+                                                                            column_name_pred = predicted_class_column_name,
+                                                                            backlog = backlog_name,
+                                                                            dpc = dpc,
+                                                                            id_session=id_session,
+                                                                            db=db)
             
             # Insert results in DB the command
             db.DB_InsertLine_results(id_param = id_session, 
                                      aggregation_param = aggregation, 
-                                     weighting_param = weighting_strategy, 
-                                     num_crits_param= n, 
+                                     weighting_param = weighting_strategy,
+                                     num_crits_param= n,
+                                     num_epics_param = num_of_epics_in_backlog,
                                      dpc_param=dpc, 
                                      backlog_param=backlog_name, 
+                                     tot_error_param=total_error,
                                      wmae_param=wmae, 
                                      n_wmae_param=n_wmae)
 

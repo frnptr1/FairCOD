@@ -34,11 +34,11 @@ class DBConnection():
         return config
 
 
-    def DB_InsertLine_results(self, id_param, aggregation_param, weighting_param, num_crits_param, dpc_param, backlog_param, wmae_param, n_wmae_param):
-        packed_params = (id_param, aggregation_param,  weighting_param, num_crits_param, dpc_param, backlog_param, wmae_param, n_wmae_param) 
+    def DB_InsertLine_results(self, id_param, aggregation_param, weighting_param, num_crits_param, num_epics_param, dpc_param, backlog_param, tot_error_param, wmae_param, n_wmae_param):
+        packed_params = (id_param, aggregation_param,  weighting_param, num_crits_param, num_epics_param, dpc_param, backlog_param, tot_error_param, wmae_param, n_wmae_param) 
         self.cursor.execute(self.db_config['sql_result_insert_into'], packed_params)
 
-    def DB_InsertLine_cod_estimation(self, id_param, epic_name_param, epic_id_param, true_cod_param, pred_cod_param, class_difference_param, error_param):
+    def DB_InsertLine_cod_estimation(self, id_param, results_id, epic_name_param, epic_id_param, true_cod_param, pred_cod_param, class_difference_param, error_param):
         
-        packed_params = (id_param, epic_name_param, epic_id_param, true_cod_param, pred_cod_param, class_difference_param, error_param) 
+        packed_params = (id_param, results_id, epic_name_param, epic_id_param, true_cod_param, pred_cod_param, class_difference_param, error_param) 
         self.cursor.execute(self.db_config['sql_cod_estimation_insert_into'], packed_params)

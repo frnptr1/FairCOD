@@ -166,11 +166,19 @@ def single_line_wowa(item: pd.Series, interpolator: PiecewiseLinearInterpolator,
     return wowa_value
 
 
-def WOWA(dataframe: pd.DataFrame, w_weights_vector: Union[List, np.ndarray], p_weights_vector: Dict, dpc, columns_to_drop: Optional[List]) -> pd.DataFrame:
+def WOWA(dataframe: pd.DataFrame, w_weights_vector: Union[List, pd.DataFrame, np.ndarray], p_weights_vector: Dict, dpc, columns_to_drop: Optional[List]) -> pd.DataFrame:
 
     # Implementation of Weighted Ordered Weighted Average operator, as defined in 
     # Torra, Vicenç, and Yasuo Narukawa. Modeling decisions: information fusion and aggregation operators. Springer Science & Business Media, 2007.
     # Section 6.1.3
+
+    # passed as pandas dataframe to take the column name
+    weighting_strategy = w_weights_vector.columns[0]
+    # setup name of new columns that will be created
+    aggregation_column_name = f'WOWA_{weighting_strategy}_{dpc}'
+
+    # then converted into numpy array as before
+    w_weights_vector = w_weights_vector.to_numpy()
 
     w_acc = [np.sum(w_weights_vector[0:i+1]) for i in range(len(w_weights_vector))]
     w_acc.insert(0,0)
@@ -182,8 +190,6 @@ def WOWA(dataframe: pd.DataFrame, w_weights_vector: Union[List, np.ndarray], p_w
 
     # the trained interpolator is nothing but the interpolation function w* 
     trained_interpolator = PiecewiseLinearInterpolator(x_points, y_points)
-
-    aggregation_column_name = f'WOWA_{dpc}'
 
     # create the column of aggregated values
     if columns_to_drop:
