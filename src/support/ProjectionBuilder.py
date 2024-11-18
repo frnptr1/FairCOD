@@ -63,9 +63,11 @@ class ProjectionBuilder():
         # Plot the main line
         ax.plot([width_vector[0], width_vector[-1]], [0, 0], 'b-', linewidth=2)
 
+        ### TMP COMMENTED OUT ###
         # Add points to highlight intervals
-        for i in width_vector:
-            ax.plot(i, 0, 'ro', markersize=10)
+        # for i in width_vector:
+        #    ax.plot(i, 0, 'ro', markersize=10)
+        ### TMP COMMENTED OUT ###
 
         # Add vertical lines to emphasize intervals
         for i in width_vector:

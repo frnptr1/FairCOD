@@ -1,3 +1,5 @@
+# ------- results table
+
 sql_result_create_table: 'CREATE TABLE IF NOT EXISTS results (
     id TEXT PRIMARY KEY,
     aggregation TEXT,
@@ -14,6 +16,7 @@ sql_result_create_table: 'CREATE TABLE IF NOT EXISTS results (
 sql_result_insert_into: 'INSERT INTO results (id, aggregation, Weighting, Num_crits, Num_epics, DPC, Backlog, tot_error, WMAE, N_WMAE)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
 
+# ------- cod_estimation table
 
 sql_cod_estimation_create_table: 'CREATE TABLE IF NOT EXISTS cod_estimation (
     session_id TEXT PRIMARY KEY,
@@ -29,3 +32,19 @@ sql_cod_estimation_create_table: 'CREATE TABLE IF NOT EXISTS cod_estimation (
 
 sql_cod_estimation_insert_into: 'INSERT INTO cod_estimation (session_id, results_id, epic_name, epic_id, true_cod, pred_cod, class_difference, error)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+
+
+# ------- wowa_results
+
+sql_wowa_create_table: 'CREATE TABLE IF NOT EXISTS wowa (
+    id TEXT PRIMARY KEY,
+    epic_name TEXT,
+    epic_id TEXT,
+    wowa_value REAL,
+    backlog TEXT,
+    session_id TEXT,
+    FOREIGN KEY (session_id) REFERENCES cod_estimation(session_id)
+)'
+
+sql_wowa_insert_into: 'INSERT INTO cod_estimation (id, epic_name, epic_id, wowa_value, backlog, session_id)
+VALUES (?, ?, ?, ?, ?, ?)'

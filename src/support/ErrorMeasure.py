@@ -24,7 +24,17 @@ def evaluate_WeightedMeanAbsoluteError(df: pd.DataFrame, column_name_true: str, 
         true_idx = classes_values.index(row[column_name_true])
         pred_idx = classes_values.index(row[column_name_pred])
 
+        # class correctly estimated
         if true_idx == pred_idx:
+            cod_estimation_id_session = '_'.join([id_session, row.name])
+            db.DB_InsertLine_cod_estimation(id_param=cod_estimation_id_session,
+                                            results_id=id_session, 
+                                            epic_name_param=row['Epic_Name'], 
+                                            epic_id_param=row.name, 
+                                            true_cod_param=int(row[column_name_true]), 
+                                            pred_cod_param=int(row[column_name_pred]), 
+                                            class_difference_param=0, 
+                                            error_param=0)
             continue
 
         start, end = min(true_idx, pred_idx), max(true_idx, pred_idx)

@@ -10,6 +10,7 @@ import json
 
 
 # Get the project root directory
+# project_root = Path("./").resolve().parent
 project_root = Path(__file__).resolve().parent.parent.parent
 
 
@@ -56,8 +57,8 @@ def main():
     
     # I load information about data source and aggregation strategy and processing config
     filename_str = 'FairCOD-Dataset-v2.xlsx' # to be parametrized lately
-    aggregation = 'OWA' # to be parametrized lately
-    save = False # to save results created as .csv files - to be parametrized lately
+    aggregation = 'WOWA' # to be parametrized lately
+    save = True # to save results created as .csv files - to be parametrized lately
 
     # create ID session
     time_session = f'{datetime.now().strftime("%Y%m%d_%H%M%S_%f")}'
