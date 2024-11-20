@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
-
+from AggregationModule import PiecewiseLinearInterpolator
+from scipy.interpolate import interp1d
 
 
 def create_EqualWeights(n):
@@ -19,6 +20,59 @@ def create_RankSum(n):
   ranksum_weights = single_weight(orders)
 
   return np.sort(ranksum_weights)[::-1]
+
+
+
+def create_FibonacciInverseWeights(n: int) ->np.ndarray :
+
+  '''
+  Create FibonacciInverse-based set of weights with dimension n
+
+  Parameters:
+    n: number of weights (and consequently length) to store in resulting array
+
+  Returns:
+    ndarray: array with weights sorted in descending order
+
+  Scope:
+    This function create a set of ordered weights according to the inverse Fibonacci sequence
+    adopted in Digital Products development for scoring new epics.
+    Fibonacci sequence adopted is {1,2,3,5,8,13,20,40,100}
+    The considered sequence is instead {100,40,20,13,8,5,3,2,1}
+    This because we want to give more weight to higher values when performing OWA/WOWA aggregation.
+    The result is obtained interpolating a function to the set points {i/n, Sum(inverseFib_normalized_i)}
+    Once interpolated, the function will receive in input linspace(0,1,n) so that will return the
+    corresponding values
+  '''
+  inverseFib = [100,40,20,13,8,5,3,2,1]
+  inverseFib_normalized = np.array(inverseFib) / sum(inverseFib)
+  
+  # accumulated weights for y-axis values
+  y_points = [np.sum(inverseFib_normalized[0:i+1]) for i in range(len(inverseFib_normalized))]
+  y_points.insert(0,0)
+  # create the equally-spaced values for x-axis
+  x_points = np.linspace(0,1,len(y_points))
+
+  # train the interpolator
+  #trained_interpolator =PiecewiseLinearInterpolator(x_points, y_points)
+  trained_interpolator = interp1d(x_points, y_points, kind='quadratic')
+  # where are placed the new x's?
+  new_xs = np.linspace(0,1,n+1)
+
+  #FibonacciInverseCumulativeWeights = list(map(lambda x: trained_interpolator.interpolate(x), new_xs))
+  FibonacciInverseCumulativeWeights = list(map(lambda x: trained_interpolator(x), new_xs))
+  
+  
+  # retrieve for the cumulative ones the single weights
+  FibonacciInverseWeights = []
+  for i in range(len(FibonacciInverseCumulativeWeights)-1):
+    res = FibonacciInverseCumulativeWeights[i+1] - FibonacciInverseCumulativeWeights[i]
+    FibonacciInverseWeights.append(np.round(res, 3))
+
+
+  return np.sort(FibonacciInverseWeights)[::-1]
+
+
 
 
 
