@@ -130,7 +130,8 @@ def CreateWeightsArray(weighting_strategy: str, n: int) -> pd.DataFrame:
         "EqualWeights": create_EqualWeights,
         "RankSum": create_RankSum,
         "RankReciprocal": create_RankReciprocal,
-        "RankOrderCentroid": create_RankOrderCentroid
+        "RankOrderCentroid": create_RankOrderCentroid,
+        "FibonacciInverse": create_FibonacciInverseWeights
     }
     
     if weighting_strategy in strategy_functions:
