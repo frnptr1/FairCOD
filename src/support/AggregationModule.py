@@ -1,8 +1,7 @@
 import pandas as pd
 import numpy as np
 from typing import List, Optional, Union, Dict
-
-
+import shared
 
 
 def single_line_owa(item: pd.Series, weights_array: Union[np.ndarray, pd.Series, List]) -> np.ndarray:
@@ -126,9 +125,24 @@ class PiecewiseLinearInterpolator:
         raise ValueError("x_new did not fall into any interval. This should not happen.")
 
 
-def single_line_wowa(item: pd.Series, interpolator: PiecewiseLinearInterpolator, p_vector: Dict):
+def single_line_wowa(item: pd.Series, interpolator: PiecewiseLinearInterpolator, p_vector: Dict, dpc:Optional[Union[float,int]]):
 
+    # set everything ready to write aggregation results to DB
+    epic_name = item.Epic_Name
+    backlog = item.Backlog
+    cod = item.CoD
     epic_id = item.name
+    dpc = dpc
+    session_id = f'{shared.time_session}_{dpc}_{backlog}'
+    project_id = f'{session_id}_{epic_id}'
+    aggregation = shared.aggregation
+    cols_to_drop = shared.columns_to_drop
+
+    # open the connection to the DB
+    db = shared.DBConnection
+
+    # once retrieve alla the info needed, clean the Series from unused cols
+    item.drop(labels=cols_to_drop, inplace=True)
     
     # Build vector p for the item in input
     # vector p is tailored according to the line in input.
@@ -142,7 +156,7 @@ def single_line_wowa(item: pd.Series, interpolator: PiecewiseLinearInterpolator,
 
     wowa_value = 0
 
-    print(f'### Evaluation epic {epic_id} ###')
+    # print(f'### Evaluation epic {epic_id} ###')
 
     # Now that I the vector of p is ready, I can go on with the calculation of the weights w*
     for idx, (col_name, val) in enumerate(item.sort_values(ascending=False).items()):
@@ -159,7 +173,20 @@ def single_line_wowa(item: pd.Series, interpolator: PiecewiseLinearInterpolator,
 
         wowa_value += wowa_term
 
-        print(f'Position {idx:>3} \n -- Criteria {col_name:>50} -- term_1 {term_1:>5.2f} -- term_2 {term_2:>5.2f} -- mapped term_1 {mapped_term_1:>5.2f} -- mapped term_2 {mapped_term_2:>5.2f} -- w_{idx} {w_wowa:>5.2f} -- crit value {val:>5.2f} -- wowa_term {wowa_term:>5.2f}')
+        # print(f'Position {idx:>3} \n -- Criteria {col_name:>50} -- term_1 {term_1:>5.2f} -- term_2 {term_2:>5.2f} -- mapped term_1 {mapped_term_1:>5.2f} -- mapped term_2 {mapped_term_2:>5.2f} -- w_{idx} {w_wowa:>5.2f} -- crit value {val:>5.2f} -- wowa_term {wowa_term:>5.2f}')
+
+    print(project_id)
+
+    db.DB_InsertLine_aggregation(session_id_param = session_id, 
+                                 project_id = project_id, 
+                                 epic_name_param = epic_name, 
+                                 epic_id_param = epic_id, 
+                                 aggregated_value_param = wowa_value, 
+                                 aggregation_param = aggregation , 
+                                 backlog_param = backlog, 
+                                 true_cod_param = cod)
+
+    db.connection.commit()
 
     print(f'### WOWA value for epic {epic_id}  is {wowa_value} ###')
 
@@ -193,8 +220,8 @@ def WOWA(dataframe: pd.DataFrame, w_weights_vector: Union[List, pd.DataFrame, np
 
     # create the column of aggregated values
     if columns_to_drop:
-        dataframe[aggregation_column_name] = dataframe.drop(columns=columns_to_drop, axis=1).apply(single_line_wowa, args=(trained_interpolator,p_weights_vector), axis=1)
+        dataframe[aggregation_column_name] = dataframe.drop(columns=columns_to_drop, axis=1).apply(single_line_wowa, args=(trained_interpolator,p_weights_vector, dpc), axis=1)
     else:
-        dataframe[aggregation_column_name] = dataframe.apply(single_line_wowa, args=(trained_interpolator,p_weights_vector), axis=1)
+        dataframe[aggregation_column_name] = dataframe.apply(single_line_wowa, args=(trained_interpolator,p_weights_vector, dpc), axis=1)
 
     return dataframe, aggregation_column_name
