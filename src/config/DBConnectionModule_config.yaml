@@ -34,17 +34,43 @@ sql_cod_estimation_insert_into: 'INSERT INTO cod_estimation (session_id, results
 VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
 
 
-# ------- wowa_results
+# --------- aggregation table
 
-sql_wowa_create_table: 'CREATE TABLE IF NOT EXISTS wowa (
-    id TEXT PRIMARY KEY,
+sql_aggregation_create_table: 'CREATE TABLE IF NOT EXISTS aggregation (
+    session_id TEXT,
+    project_id TEXT PRIMARY KEY,
     epic_name TEXT,
     epic_id TEXT,
-    wowa_value REAL,
+    aggregated_value REAL,
+    aggregation_strategy TEXT,
     backlog TEXT,
-    session_id TEXT,
-    FOREIGN KEY (session_id) REFERENCES cod_estimation(session_id)
+    true_cod INTEGER,
+    FOREIGN KEY (project_id) REFERENCES cod_estimation(results_id)
 )'
 
-sql_wowa_insert_into: 'INSERT INTO cod_estimation (id, epic_name, epic_id, wowa_value, backlog, session_id)
-VALUES (?, ?, ?, ?, ?, ?)'
+
+sql_aggregation_insert_into: 'INSERT INTO aggregation (session_id, project_id, epic_name, epic_id, aggregated_value, aggregation_strategy, backlog, true_cod)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+
+
+
+
+# ------- wowa table
+
+sql_wowa_create_table: 'CREATE TABLE IF NOT EXISTS wowa (
+    project_id TEXT PRIMARY KEY,
+    aggregated_value REAL,
+    position INTEGER,
+    criteria TEXT,
+    criteria_value REAL,
+    p_weight_current REAL,
+    p_weight_previous REAL,
+    omega_star_current REAL,
+    omega_star_previous REAL,
+    wowa_weight REAL,
+    weighted_criteria_val REAL,
+    FOREIGN KEY (project_id) REFERENCES aggregation(project_id)
+)'
+
+sql_wowa_insert_into: 'INSERT INTO wowa (project_id, aggregated_value, position, criteria, criteria_value, p_weight_current, p_weight_previous, omega_star_current, omega_star_previous, wowa_weight, weighted_criteria_val)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
