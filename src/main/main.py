@@ -19,6 +19,7 @@ support_modules_path = os.path.join(project_root, 'src', 'support')
 sys.path.append(support_modules_path)
 
 # import customer moduels 
+import shared
 from AggregationModule import OWA, WA, WOWA
 from DataPreparation import ExecuteDataPreparation
 from MappingModule import ExecuteDataMapping
@@ -61,13 +62,27 @@ def main():
     save = True # to save results created as .csv files - to be parametrized lately
 
     # create ID session
-    time_session = f'{datetime.now().strftime("%Y%m%d_%H%M%S_%f")}'
+    time_session = f'{datetime.now().strftime("%Y%m%d_%H%M%S")}'
     file_path = os.path.join(project_root, 'results', time_session) # if save == True, file path where csv are stored
 
     # Create the full path for the database file
-    db_path = os.path.join(project_root, 'results', "database-v2.db")
+    db_path = os.path.join(project_root, 'results', "database-v3.db")
 
     db = DBConnection(db_position = db_path)
+
+    # columns to drop
+    c_to_drop = ['DPC', 'Epic_Name', 'CoD', 'Backlog', 'Margin_to_deadline']
+
+    # make information available globally
+    shared.time_session = time_session
+    shared.project_root = project_root
+    shared.support_modules_path = support_modules_path
+    shared.weighting_config_path = weighting_config_path
+    shared.db_config_path = db_config_path
+    shared.aggregation = aggregation
+    shared.db_path = db_path
+    shared.columns_to_drop = c_to_drop
+    shared.DBConnection = db
 
 
     #################
@@ -77,7 +92,6 @@ def main():
 
     # preparing for processing
     res_dict = {}
-    c_to_drop = ['DPC', 'Epic_Name', 'CoD', 'Backlog', 'Margin_to_deadline']
 
 
     ###########################
@@ -123,7 +137,7 @@ def main():
                                                              w_weights_vector=w,
                                                              p_weights_vector= p,
                                                              dpc=dpc,
-                                                             columns_to_drop=c_to_drop)
+                                                             columns_to_drop=None)
                 
                 res_dict[dpc][backlog_name] = aggregated_df
 
@@ -157,8 +171,6 @@ def main():
         for backlog_name, df in backlogs.items():
             
             aggregated_column_name = f"{aggregation}_{weighting_strategy}_{str(dpc)}"
-
-            print(res_dict[dpc][backlog_name].columns)
 
             res_dict[dpc][backlog_name] = ExecuteDataMapping(dataframe= res_dict[dpc][backlog_name], 
                                                              columns_added=aggregated_column_name,
